@@ -1,0 +1,130 @@
+First of all I have to tell you that my work is maden by my own, I don’t like searching in the internet about how to do some stuff when I can just read the source manual and perform and practice with that information. Maybe there are best ways to do this but in my case, this is what i think is the best, and obviously I will read about efficient ways… But now, let the mind take ideas! Thats the main point of a programmer, isn’t it? Exploit your mind! :3
+
+I asked sometime, how can the C# List<> have an indexer and return X value in Y position? Well, I had this doubt with my mind for a time and I decided to try implement this by my own (As I said, maybe there are better ways in the net)
+
+C# List<> example: 
+
+List<Int32> IntList = new List<Int32>();
+
+IntList.Add(69); //Mmm ~ <3 :3
+
+Console.WriteLine(“Value from index 0 in list is {0}”, IntList[0]); //Output: Value from index 0 in list is 69
+
+Custom Linked List Example:
+
+Ttail<String> SampleList = new Ttail<string>();
+
+SampleList.Add(“69”); //Same but as String type
+
+Console.WriteLine(“Value from index 0 in list is {0}”, SampleList[0]); //Output: Value from index 0 in list is 69
+
+Now… The code working for this is a modified Linked list Qeue:
+
+class Ttail<T> //COLITAAA =^_^=
+{
+
+public class Cell
+{
+    public T element;
+public Cell next = null;
+
+   public Cell(T obj, Cell point)
+{
+element = obj;
+point.next = this;
+}
+
+   public Cell(T obj)
+{
+element = obj;
+}
+}
+
+Cell top, last;
+int size = 0;
+bool IsModified = true; //The magic in in this flag -> “IsModified”?
+T[] indexer = null;
+
+public Ttail()
+{
+top = null;
+last = null;
+}
+
+public  bool IsEmpty()
+{
+return last == null;
+}
+
+public void Add(T o)
+{
+if (IsEmpty())
+last = top = new Cell(o);
+
+   else
+last = new Cell(o, last);
+
+size++;
+
+IsModified = true; //Everytime the user add or removes elements from the list, the flag is set to “TRUE”, telling that the linked list has been modified from original source…
+
+}
+
+public T Top()
+{
+if (!IsEmpty())
+return top.element;
+
+   else return (dynamic)null;
+}
+
+public T Last()
+{
+return last.element;
+}
+
+public void RemoveLast()
+{
+if (size > 0)
+size–;
+
+   if (!IsEmpty())
+if (top == last)
+{
+last = top = null;
+IsModified = true; //Everytime the user add or removes elements from the list, the flag is set to “TRUE”, telling that the linked list has been modified from original source…
+}
+
+   else
+{
+top = top.next;
+IsModified = true;
+}
+}
+
+public Int32 Length
+{
+get { return size; }
+}
+
+public T this[int index]
+{
+get
+{
+if (IsModified) //We have the indexer of the Linked list and the firs time we acces any value from the indexer, first this will check if the indexer was built (If we add or remove values, indexer needs to be built again)
+{
+indexer = new T[size];
+int i = 0;
+Cell auxiliar = top;
+while (auxiliar != null)
+{
+indexer[i++] = auxiliar.element;
+auxiliar = auxiliar.next;
+}
+IsModified = false; //Now we tell the program our linked list indexer was build
+}
+
+   return indexer[index]; //Now, if we access multiple values without changing the list, we can easily acess them by the indexer. If we add or remove elements from it, it will be rebuilt
+}
+}
+}
